@@ -1,0 +1,4 @@
+main.o: main.cpp simulator.hpp simulatable.hpp
+simulator.o: simulator.cpp simulator.hpp simulatable.hpp
+packet_generator.o: packet_generator.cpp packet_generator.hpp \
+ simulatable.hpp packet.hpp
