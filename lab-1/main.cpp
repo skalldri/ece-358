@@ -10,8 +10,8 @@ using namespace std;
 static const unsigned int ticks_per_second   = 1000000000; // 1 tick = 1 ns
 static const unsigned int packets_per_second = 100;
 static const unsigned int packet_size        = 2000;     // 2000 bits
-static const int          max_queue_size     = -1;       // Unlimited size
-static const unsigned int bits_per_second    = 1000000;
+static const int          max_queue_size     = 10;       // Unlimited size
+static const unsigned int bits_per_second    = 10000;
 static const unsigned int simulation_time    = ticks_per_second * 60;
 
 //Time required to process one packet

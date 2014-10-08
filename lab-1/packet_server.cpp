@@ -53,13 +53,20 @@ void Packet_server::run_tick(unsigned long long int tick)
 
 void Packet_server::add_packet(Packet pack)
 {
-    cout << "PACKET_SERVER: Received new packet" << endl;
-    
-    queue.push_back(pack);
-    
-    //If no packet is currently processing
-    if(next_tick == 0)
+    if(max_queue_size <= 0 || queue.size() < max_queue_size)
     {
-        next_tick = current_tick + service_ticks;
+        cout << "PACKET_SERVER: Received new packet" << endl;
+        queue.push_back(pack);
+    
+        //If no packet is currently processing
+        if(next_tick == 0)
+        {
+            next_tick = current_tick + service_ticks;
+        }
+    }
+    else
+    {
+        cout << "PACKET_SERVER: ERROR! Dropping packet due to full queue" << endl;
+        packets_dropped++;
     }
 }
