@@ -2,9 +2,28 @@
 
 using namespace std;
 
-Simulator::Simulator()
+Simulator::Simulator(unsigned long long int simulation_time) : 
+current_tick(0),
+max_tick(simulation_time)
 {
 
+}
+
+void Simulator::run()
+{
+    int print_delay = 0;
+    while(current_tick < max_tick)
+    {
+        tick();
+        print_delay++;
+        
+        if(print_delay > 100000)
+        {
+            print_delay = 0;
+            cout << "Percent complete: " <<  (((float)current_tick / (float)max_tick) * 100.0) << "% " << "\r";
+            cout.flush();
+        }
+    }
 }
 
 void Simulator::tick()

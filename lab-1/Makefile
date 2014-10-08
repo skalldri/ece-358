@@ -5,7 +5,7 @@ CPPFLAGS=-g
 LDFLAGS=-g
 LDLIBS=
 
-SRCS=main.cpp simulator.cpp packet_generator.cpp packet.cpp
+SRCS=main.cpp simulator.cpp packet_generator.cpp packet_server.cpp packet.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: net_sim

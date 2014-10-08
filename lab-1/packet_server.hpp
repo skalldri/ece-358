@@ -1,11 +1,10 @@
-#ifndef _PACKET_GENERATOR_HPP
-#define _PACKET_GENERATOR_HPP
+#ifndef _PACKET_SERVER_HPP
+#define _PACKET_SERVER_HPP
 
 #include <iostream>
 #include <deque>
 #include "simulatable.hpp"
 #include "packet.hpp"
-#include "packet_server.hpp"
 
 /*
  * This class is one of the two possible simulatable objects. The first time this object is ticked, it will
@@ -15,28 +14,33 @@
  * 
  */
 
-class Packet_generator : public Simulatable {
+class Packet_server : public Simulatable {
 	
 public:
 	/* 
-	 * The constructor for the Packet_generator object.
+	 * The constructor for the Packet_server object.
 	 * 
 	 * packets_per_second: The average number of packets-per-second this generator should create
 	 * packet_size: The number of bits in each packet (not real, but for simulation tracking purposes)
-	 * tick_resolution_ns: The number of nanoseconds each tick represents
+	 * ticks_per_sec: Ticks per second
 	 */
-	Packet_generator(unsigned int packets_per_second, 
-					 unsigned int packet_size, 
-					 unsigned int ticks_per_second,
-					 Packet_server* server);
+	Packet_server(unsigned int ticks_per_sec,
+                  int max_queue,
+                  unsigned int ticks_per_packet);
 	
 	void run_tick(unsigned long long int tick);
+    void add_packet(Packet pack);
 
 private:
-	unsigned int packet_size;
-	unsigned int packets_per_second;
-	Packet_server* server;
-	unsigned long long int next_tick;
+	std::deque<Packet> queue;
+    std::deque<Packet> finished_packets;
+     
+    unsigned int max_queue_size;
+    unsigned int service_ticks;
+    unsigned long long int next_tick;
+    unsigned long long int current_tick;
+    
+    unsigned int packets_dropped;
 };
 
-#endif //_PACKET_GENERATOR_HPP
+#endif //_PACKET_SERVER_HPP
