@@ -1,11 +1,11 @@
 CC=gcc
 CXX=g++
 RM=rm -f
-CPPFLAGS=-g -std=c++11
+CPPFLAGS=-g -std=c++11 -O3
 LDFLAGS=-g
 LDLIBS=
 
-SRCS=main.cpp simulator.cpp packet_generator.cpp packet_server.cpp packet.cpp
+SRCS=main.cpp simulator.cpp packet_generator.cpp packet_server.cpp packet.cpp debug_log.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: net_sim

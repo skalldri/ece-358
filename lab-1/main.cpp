@@ -7,12 +7,12 @@
 
 using namespace std;
 
-static const unsigned long long int ticks_per_second   = 1000000000; // 1 tick = 1 ns
-static const unsigned int packets_per_second = 100;
-static const unsigned int packet_size        = 2000;     // 2000 bits
-static const int          max_queue_size     = 10;       // Unlimited size
-static const unsigned int bits_per_second    = 100000;
-static const unsigned long long int simulation_time    = ticks_per_second * 10;
+static const unsigned long long int ticks_per_second  = 1000000000; // 1 tick = 1 ns
+static const unsigned int packets_per_second          = 100;        //
+static const unsigned int packet_size                 = 2000;       // 2000 bits
+static const int          max_queue_size              = -1;         // Unlimited size
+static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
+static const unsigned long long int simulation_time   = ticks_per_second * 2; // Simulate for 10 seconds
 
 //Time required to process one packet
 static unsigned int processing_time(unsigned int ticks_per_second, unsigned int bits_per_second, unsigned int packet_size)
@@ -44,6 +44,19 @@ int main() {
     cout << "-------------STATISTICS---------------" << endl << endl;
     cout << "Packet Loss Probability: " << (float)(server.packets_dropped) / (float)(server.total_packets) << endl;
     cout << "Idle time: " << (float)(server.idle_ticks) / (float)(simulation_time) << endl;
+    cout << "Average queue length: " << (float)(server.total_queue_size) / (float)(simulation_time) << endl;
+    
+    unsigned long long int sojourn_time_total = 0;
+    while(server.finished_packets.size() > 0)
+    {
+        Packet finished = server.finished_packets.front();
+        server.finished_packets.pop_front();
+        
+        sojourn_time_total += (finished.end_tick - finished.creation_tick);
+    }
+    
+    cout << "Average sojourn time (ticks): " << (float)(sojourn_time_total) / (float)(server.total_packets) << endl;
+    
 }
 
 

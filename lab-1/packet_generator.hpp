@@ -7,6 +7,7 @@
 #include "packet.hpp"
 #include "packet_server.hpp"
 #include "exponential_rand.hpp"
+#include "debug_log.hpp"
 
 /*
  * This class is one of the two possible simulatable objects. The first time this object is ticked, it will

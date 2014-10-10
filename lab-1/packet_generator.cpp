@@ -25,7 +25,7 @@ void Packet_generator::run_tick(unsigned long long int tick)
 {    
     if(tick >= next_tick)
     {
-        cout << "PACKET_GENERATOR: Adding new packet" << endl;
+        debug_log("PACKET_GENERATOR: Adding new packet");
         
         //Generate a new packet
         Packet newPacket(packet_size, tick);

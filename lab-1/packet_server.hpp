@@ -5,6 +5,7 @@
 #include <deque>
 #include "simulatable.hpp"
 #include "packet.hpp"
+#include "debug_log.hpp"
 
 /*
  * This class is one of the two possible simulatable objects. The first time this object is ticked, it will
@@ -34,11 +35,11 @@ public:
     unsigned long long int total_packets;
     unsigned long long int packets_dropped;
     unsigned long long int idle_ticks;
+    unsigned long long int total_queue_size; // total queue size, measured each tick. (total_queue_size / ticks) = average queue length
+    std::deque<Packet> finished_packets;
 
 private:
 	std::deque<Packet> queue;
-    std::deque<Packet> finished_packets;
-     
     unsigned int max_queue_size;
     unsigned int service_ticks;
     unsigned long long int next_tick;
