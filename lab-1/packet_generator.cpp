@@ -10,7 +10,8 @@ Packet_generator::Packet_generator(unsigned int pk_per_sec,
 	packet_size(pk_size),
 	packets_per_second(pk_per_sec),
 	server(target),
-	next_tick(0)
+	next_tick(0),
+    exp_rand(pk_per_sec, ticks_per_second)
 {
     
 }
@@ -21,9 +22,7 @@ Packet_generator::Packet_generator(unsigned int pk_per_sec,
  * -Sleep until next time
  */
 void Packet_generator::run_tick(unsigned long long int tick)
-{
-	//TEMP CODE
-    
+{    
     if(tick >= next_tick)
     {
         cout << "PACKET_GENERATOR: Adding new packet" << endl;
@@ -32,6 +31,6 @@ void Packet_generator::run_tick(unsigned long long int tick)
         Packet newPacket(packet_size, tick);
         server->add_packet(newPacket);
         //Setup next tick
-        next_tick = tick + (ticks_per_second / packets_per_second);
+        next_tick = tick + exp_rand.get_random_ticks();
     }
 }

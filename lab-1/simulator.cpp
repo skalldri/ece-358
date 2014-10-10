@@ -17,7 +17,7 @@ void Simulator::run()
         tick();
         print_delay++;
         
-        if(print_delay > 100000)
+        if(print_delay > 1000000)
         {
             print_delay = 0;
             cout << "Percent complete: " <<  (((float)current_tick / (float)max_tick) * 100.0) << "% " << "\r";

@@ -7,7 +7,9 @@ Packet_server::Packet_server(unsigned int ticks_per_sec, int max_queue, unsigned
     max_queue_size(max_queue),
     service_ticks(ticks),
     next_tick(0),
-    packets_dropped(0)
+    packets_dropped(0),
+    total_packets(0),
+    idle_ticks(0)
 {
     
 }
@@ -32,7 +34,10 @@ void Packet_server::run_tick(unsigned long long int tick)
             finished.processing_complete(tick);
             finished_packets.push_back(finished);
             
-            cout << "PACKET_SERVER: Packet processing completed. Start tick: " << finished.creation_tick << " End tick: " << finished.end_tick << endl;
+            cout << "PACKET_SERVER: Packet processing completed. Stats: " << endl <<
+                    "\tArrived in queue tick: " << finished.creation_tick << endl << 
+                    "\tProcessing start tick: " << finished.end_tick - service_ticks << endl <<
+                    "\tEnd tick: " << finished.end_tick << endl;
             
             //If there are elements left in the queue
             if(queue.size() > 0)
@@ -47,12 +52,14 @@ void Packet_server::run_tick(unsigned long long int tick)
     }
     else
     {
+        idle_ticks++;
         next_tick = 0;
     }
 }
 
 void Packet_server::add_packet(Packet pack)
 {
+    total_packets++;
     if(max_queue_size <= 0 || queue.size() < max_queue_size)
     {
         cout << "PACKET_SERVER: Received new packet" << endl;

@@ -1,8 +1,8 @@
 main.o: main.cpp simulator.hpp simulatable.hpp packet_generator.hpp \
- packet.hpp packet_server.hpp
+ packet.hpp packet_server.hpp exponential_rand.hpp
 simulator.o: simulator.cpp simulator.hpp simulatable.hpp
 packet_generator.o: packet_generator.cpp packet_generator.hpp \
- simulatable.hpp packet.hpp packet_server.hpp
+ simulatable.hpp packet.hpp packet_server.hpp exponential_rand.hpp
 packet_server.o: packet_server.cpp packet_server.hpp simulatable.hpp \
  packet.hpp
 packet.o: packet.cpp packet.hpp

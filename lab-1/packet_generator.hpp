@@ -6,6 +6,7 @@
 #include "simulatable.hpp"
 #include "packet.hpp"
 #include "packet_server.hpp"
+#include "exponential_rand.hpp"
 
 /*
  * This class is one of the two possible simulatable objects. The first time this object is ticked, it will
@@ -37,6 +38,7 @@ private:
 	unsigned int packets_per_second;
 	Packet_server* server;
 	unsigned long long int next_tick;
+    Exponential_rand exp_rand;
 };
 
 #endif //_PACKET_GENERATOR_HPP

@@ -7,12 +7,12 @@
 
 using namespace std;
 
-static const unsigned int ticks_per_second   = 1000000000; // 1 tick = 1 ns
+static const unsigned long long int ticks_per_second   = 1000000000; // 1 tick = 1 ns
 static const unsigned int packets_per_second = 100;
 static const unsigned int packet_size        = 2000;     // 2000 bits
 static const int          max_queue_size     = 10;       // Unlimited size
-static const unsigned int bits_per_second    = 10000;
-static const unsigned int simulation_time    = ticks_per_second * 60;
+static const unsigned int bits_per_second    = 100000;
+static const unsigned long long int simulation_time    = ticks_per_second * 10;
 
 //Time required to process one packet
 static unsigned int processing_time(unsigned int ticks_per_second, unsigned int bits_per_second, unsigned int packet_size)
@@ -36,8 +36,14 @@ int main() {
     cout << "Bits per sim-second: " << bits_per_second << " bits" << endl;
     cout << "Packet processing time: " << processing_time(ticks_per_second, bits_per_second, packet_size) << " ticks" << endl;
     cout << "Average time between packets: " << (ticks_per_second / packets_per_second) << " ticks" << endl;
+    cout << "Total ticks: " << simulation_time << " ticks" << endl << endl;
+    cout << "-------------MESSAGES---------------" << endl << endl;
     
     network_simulator.run();
+    
+    cout << "-------------STATISTICS---------------" << endl << endl;
+    cout << "Packet Loss Probability: " << (float)(server.packets_dropped) / (float)(server.total_packets) << endl;
+    cout << "Idle time: " << (float)(server.idle_ticks) / (float)(simulation_time) << endl;
 }
 
 

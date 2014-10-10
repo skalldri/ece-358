@@ -31,6 +31,10 @@ public:
 	void run_tick(unsigned long long int tick);
     void add_packet(Packet pack);
 
+    unsigned long long int total_packets;
+    unsigned long long int packets_dropped;
+    unsigned long long int idle_ticks;
+
 private:
 	std::deque<Packet> queue;
     std::deque<Packet> finished_packets;
@@ -40,7 +44,6 @@ private:
     unsigned long long int next_tick;
     unsigned long long int current_tick;
     
-    unsigned int packets_dropped;
 };
 
 #endif //_PACKET_SERVER_HPP
