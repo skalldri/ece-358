@@ -3,7 +3,7 @@
 #include "packet_generator.hpp"
 #include "packet_server.hpp"
 
-//ONE TICK IS ONE NANOSECOND
+//#define PREAMBLE //Undefine this to remove a lot of the message dumping procedure. See also #define DEBUG
 
 using namespace std;
 
@@ -12,7 +12,7 @@ static const unsigned int packets_per_second          = 100;        //
 static const unsigned int packet_size                 = 2000;       // 2000 bits
 static const int          max_queue_size              = -1;         // Unlimited size
 static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
-static const unsigned long long int simulation_time   = ticks_per_second * 2; // Simulate for 10 seconds
+static const unsigned long long int simulation_time   = ticks_per_second * 5; // Simulate for 10 seconds
 
 //Time required to process one packet
 static unsigned int processing_time(unsigned int ticks_per_second, unsigned int bits_per_second, unsigned int packet_size)
@@ -20,7 +20,7 @@ static unsigned int processing_time(unsigned int ticks_per_second, unsigned int 
     return (ticks_per_second / bits_per_second) * packet_size;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
 	Simulator network_simulator(simulation_time);
     Packet_server server(ticks_per_second, max_queue_size, processing_time(ticks_per_second, bits_per_second, packet_size));
     Packet_generator generator(packets_per_second, packet_size, ticks_per_second, &server);
@@ -28,6 +28,7 @@ int main() {
     network_simulator.add_simulatable(&server);
     network_simulator.add_simulatable(&generator);
     
+    #ifdef PREAMBLE
     cout << "-------------ECE 358 NETWORK SIMULATOR---------------" << endl << endl;
     cout << "             ONE TICK IS ONE NANOSECOND" << endl << endl;
     cout << "Ticks per sim-second: " << ticks_per_second << endl;
@@ -38,6 +39,7 @@ int main() {
     cout << "Average time between packets: " << (ticks_per_second / packets_per_second) << " ticks" << endl;
     cout << "Total ticks: " << simulation_time << " ticks" << endl << endl;
     cout << "-------------MESSAGES---------------" << endl << endl;
+    #endif
     
     network_simulator.run();
     
