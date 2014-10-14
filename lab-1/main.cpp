@@ -12,7 +12,7 @@ static const unsigned long long int ticks_per_second  = 1000000000; // 1 tick = 
 static const unsigned int packet_size                 = 2000;       // 2000 bits
              int          max_queue_size              = -1;         // Unlimited size
 static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
-static const unsigned long long int simulation_time   = ticks_per_second * 5; // Simulate for 10 seconds
+static const unsigned long long int simulation_time   = ticks_per_second * 60; // Simulate for 10 seconds
 
 //Time required to process one packet
 static unsigned int processing_time(unsigned int ticks_per_second, unsigned int bits_per_second, unsigned int packet_size)
