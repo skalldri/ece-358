@@ -8,9 +8,9 @@
 using namespace std;
 
 static const unsigned long long int ticks_per_second  = 1000000000; // 1 tick = 1 ns
-static const unsigned int packets_per_second          = 100;        //
+             unsigned int packets_per_second          = 100;        //
 static const unsigned int packet_size                 = 2000;       // 2000 bits
-static const int          max_queue_size              = -1;         // Unlimited size
+             int          max_queue_size              = -1;         // Unlimited size
 static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
 static const unsigned long long int simulation_time   = ticks_per_second * 5; // Simulate for 10 seconds
 
@@ -21,7 +21,16 @@ static unsigned int processing_time(unsigned int ticks_per_second, unsigned int 
 }
 
 int main(int argc, char *argv[]) {
-	Simulator network_simulator(simulation_time);
+
+    cout << "Please enter max queue size: ";
+    cin >> max_queue_size;
+    cout << "Max Queue Size is " << max_queue_size << endl;
+
+    cout << "Please enter packets per second: ";
+    cin >> packets_per_second;
+    cout << "Packets per second is " << packets_per_second << endl;
+
+    Simulator network_simulator(simulation_time);
     Packet_server server(ticks_per_second, max_queue_size, processing_time(ticks_per_second, bits_per_second, packet_size));
     Packet_generator generator(packets_per_second, packet_size, ticks_per_second, &server);
     
