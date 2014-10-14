@@ -66,8 +66,7 @@ int main(int argc, char *argv[]) {
         sojourn_time_total += (finished.end_tick - finished.creation_tick);
     }
     
-    cout << "Average sojourn time (ticks): " << (float)(sojourn_time_total) / (float)(server.total_packets) << endl;
-    
+    cout << "Average sojourn time (ticks): " << (unsigned long long int)((float)(sojourn_time_total) / (float)(server.total_packets)) << endl;    
 }
 
 
