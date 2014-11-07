@@ -4,8 +4,9 @@
 #include <iostream>
 #include <vector>
 #include "packet.hpp"
-#include "computer.hpp"
 #include "debug_log.hpp"
+
+class Computer;
 
 enum SignalState {
   TRANSMITTED,

@@ -1,4 +1,5 @@
 #include "network_medium.hpp"
+#include "computer.hpp"
 
 using namespace std;
 
@@ -39,10 +40,10 @@ void Network_medium::run_tick(unsigned long long int tick)
         
         if(it->state == TERMINATED)
         {
-            it->off_propagation_length += propagation_speed * (1 / ticks_per_second);
+            it->off_propagation_length += propagation_speed * (1.0 / (float)ticks_per_second);
         }
         
-        it->on_propagation_length += propagation_speed * (1 / ticks_per_second);
+        it->on_propagation_length += propagation_speed * (1.0 / (float)ticks_per_second);
         
         ++it;
 	}
@@ -86,7 +87,7 @@ bool Network_medium::is_busy(Computer* sender)
 	     ++it )
 	{
         // Get the distance between this "transmitting computer" and the computer that is checking the line for busy
-        float distance = abs(sender->get_Id() - it->source->get_Id()) * 10.0;
+        float distance = abs(sender->getId() - it->source->getId()) * 10.0;
         
 		if(it->on_propagation_length >= distance && it->off_propagation_length < distance)
         {
