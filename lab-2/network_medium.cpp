@@ -1,19 +1,45 @@
 #include "network_medium.hpp"
 
-Network_medium::Network_medium(unsigned int ticks_per_second) : 
-    Simulatable(ticks_per_second)
+using namespace std;
+
+Network_medium::Network_medium(unsigned int ticks_per_second, unsigned int num_comp) : 
+    Simulatable(ticks_per_second),
+    num_computers(num_comp)
 {
     
 }
 
 void Network_medium::run_tick(unsigned long long int tick)
 {
-    //I don't think anything needs to happen here. All the notification logic will occur in transmit_packet
+    //Transmit to any computers that need to be notified
+    current_tick = tick;
+    
+    for( vector<Collision_event>::iterator it = collisions.begin();
+	     it != collisions.end(); 
+	     //Empty )
+	{
+		if((*it).off_propagation_length <= num_computers)
+        {
+            collisions.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+	}
 }
 
-// Other people call this when they want to send a packet over the medium. 
-void transmit_packet(Computer* sender, Packet p)
+// Call this function every tick while you are transmitting a packet
+void Network_medium::transmit(Computer* sender)
 {
-    //If more than one person tries to transmit, notify everyone who's transmitted during this tick
-    //Note: conditions for when a collision occurs might be more complex than just "two people in same tick". Need to review CSMA/CD signal propagation issues to be sure.
+    //Add this computer to the list of transmitting computers (this is on a per-tick basis)   
+    transmitters.push_back(sender);
+    
+}
+
+// Returns true is the network medium AT THE LOCATION OF THE CURRENT COMPUTER is busy
+// Will not return true if YOU are the one transmitting: only other people
+bool Network_medium::is_busy(Computer* sender)
+{
+    
 }
