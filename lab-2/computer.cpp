@@ -1,9 +1,10 @@
 #include "computer.hpp"
 
-Computer::Computer(unsigned int ticks_per_sec) :
+Computer::Computer(Network_medium* medium, int id, unsigned int ticks_per_sec) :
     Simulatable(ticks_per_sec)
 {
-    
+    this.id = id;
+	this->medium = medium;
 }
     
 void Computer::run_tick(unsigned long long int tick)
@@ -23,4 +24,9 @@ void Computer::run_tick(unsigned long long int tick)
 void Computer::collision_callback()
 {
     // Abort transmitting current packet and requeue according to CSMA/CD
+}
+
+int Computer::getId()
+{
+	return id;
 }
