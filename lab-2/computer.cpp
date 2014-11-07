@@ -1,6 +1,6 @@
-#include "computer.h"
+#include "computer.hpp"
 
-Computer::Computer(unsigned int ticks_per_sec, ) :
+Computer::Computer(unsigned int ticks_per_sec) :
     Simulatable(ticks_per_sec)
 {
     

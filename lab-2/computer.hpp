@@ -7,6 +7,8 @@ class Computer : public Simulatable {
     Computer(unsigned int ticks_per_sec);
     
     void run_tick(unsigned long long int tick);
+    
+    void collision_callback();
 };
 
 #endif
