@@ -1,7 +1,8 @@
 main.o: main.cpp simulator.hpp simulatable.hpp computer.hpp \
- network_medium.hpp packet.hpp
+ network_medium.hpp packet.hpp debug_log.hpp
 simulator.o: simulator.cpp simulator.hpp simulatable.hpp
 computer.o: computer.cpp computer.hpp simulatable.hpp
-network_medium.o: network_medium.cpp network_medium.hpp packet.hpp
+network_medium.o: network_medium.cpp network_medium.hpp packet.hpp \
+ computer.hpp simulatable.hpp debug_log.hpp
 packet.o: packet.cpp packet.hpp
 debug_log.o: debug_log.cpp debug_log.hpp
