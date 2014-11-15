@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <math.h>
 #include "packet.hpp"
 #include "debug_log.hpp"
 
@@ -27,12 +28,13 @@ class Network_medium : public Simulatable {
         void run_tick(unsigned long long int tick);
         void transmit(Computer* sender);
         bool is_busy(Computer* sender);
+        int get_speed();
 
     private:
         unsigned long long int current_tick;
         unsigned int num_computers; 
         float propagation_speed; // In meters / sec
-        
+        int speed;
         std::vector<Collision_event> collisions;        
 };
 
