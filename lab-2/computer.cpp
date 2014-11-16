@@ -84,7 +84,9 @@ void Computer::run_tick(unsigned long long int tick)
 		if(to_transmit <= 0)
 		{
 			//cout << "Computer " << get_id() << " transmit complete, returning to IDLE" << endl;
-			output.push(input.front());
+			Packet done = input.front();
+			done.processing_complete(tick);
+			output.push(done);
 			input.pop();
 			state = IDLE;
 		}

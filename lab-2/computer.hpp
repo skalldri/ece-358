@@ -36,6 +36,7 @@ class Computer : public Simulatable {
     int timeout_handler(int);
     
     std::queue<Packet> output;
+    std::queue<Packet> input;
 
     private:
         Computer_state state;
@@ -53,7 +54,7 @@ class Computer : public Simulatable {
 	unsigned int packets_per_second;
 	Network_medium* medium;
 	Exponential_rand expRand;
-	std::queue<Packet> input;
+
 
 };
 

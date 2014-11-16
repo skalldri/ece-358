@@ -10,10 +10,9 @@ using namespace std;
 static const unsigned long long int ticks_per_second  = 100000000; // 1 tick = 1 us
              unsigned int packets_per_second          = 100;        //
 static const unsigned int packet_size                 = 1500 * 8;   // 1500 bytes (It takes 0.012 seconds to transmit this at 1 Mbps)
-             int          max_queue_size              = -1;         // Unlimited size
 	     int          num_computers               = 20;
 static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
-static const unsigned long long int simulation_time   = ticks_per_second * 20; // Simulate for 10 seconds
+static const unsigned long long int simulation_time   = ticks_per_second * 120; // Simulate for 10 seconds
 static const unsigned int propagation_speed           = 2 * 100000000; // meters per second (This is fast enough to ensure that collisions can always be heard)
 
 //Time required to process one packet
@@ -72,6 +71,7 @@ int main(int argc, char *argv[]) {
 
     float sojourn_time_total = 0.0;
     unsigned long long int num_bits = 0;
+    unsigned long long int total_packets = 0;
    
     for(vector<Computer*>::iterator it = computers.begin();
         it != computers.end();
@@ -79,6 +79,9 @@ int main(int argc, char *argv[]) {
     {   
         unsigned long long int sojourn_time_av_comp = 0;
         unsigned long long int num_packets = (*it)->output.size();
+	total_packets += num_packets;
+	total_packets += (*it)->input.size();
+	//cout << "Computer " << (*it)->get_id() << " has " << num_packets << " packets" << endl;
 
         while((*it)->output.size() > 0)
         {
@@ -89,9 +92,15 @@ int main(int argc, char *argv[]) {
             sojourn_time_av_comp += (finished.end_tick - finished.creation_tick);
         }
 
-	sojourn_time_total += ((float)sojourn_time_av_comp / (float)num_packets);
+        //cout << "Computer " << (*it)->get_id() << " has total packet delay " << sojourn_time_av_comp << endl;
+
+	if(num_packets > 0)
+		sojourn_time_total += ((float)sojourn_time_av_comp / (float)num_packets);
+
+        //cout << "sojourn_time_total = " << sojourn_time_total << endl;
     }
 
+    cout << "Average packets / sec: " << ((float)total_packets / (float)num_computers) / (float)(simulation_time / ticks_per_second) << endl;
     cout << "Average Delay: " <<  ((sojourn_time_total / (float)num_computers) / (float)ticks_per_second) << endl;
     cout << "Average Throughput: " << (float)num_bits / (float)(simulation_time / ticks_per_second) << " bits/sec" << endl;
     
