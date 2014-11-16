@@ -20,34 +20,34 @@ void Network_medium::run_tick(unsigned long long int tick)
     
     //cout << "Beginning network_medium processing time" << endl;
 
-    for( vector<Collision_event>::iterator it = collisions.begin();
+    	for( vector<Collision_event>::iterator it = collisions.begin();
 	     it != collisions.end(); )
 	{
-        // If the "signal off" wave has propagated the entire length of the cable...
-	if(it->off_propagation_length > cable_length)
-        {
-            // Delete the collision event as we won't ever use this again
-            it = collisions.erase(it);
-            continue;
-        }
+        	// If the "signal off" wave has propagated the entire length of the cable...
+		if(it->off_propagation_length > cable_length)
+        	{
+            		// Delete the collision event as we won't ever use this again
+            		it = collisions.erase(it);
+            		continue;
+        	}
 
-        if(it->state == ANTICIPATED)
-        {
-            it->state = TERMINATED;
-        } 
-        else if(it->state == TRANSMITTED)
-        {
-            it->state = ANTICIPATED;
-        }
-        
-        if(it->state == TERMINATED)
-        {
-            it->off_propagation_length += propagation_speed * (1.0 / (float)ticks_per_second);
-        }
-        
-        it->on_propagation_length += propagation_speed * (1.0 / (float)ticks_per_second);
-        
-        ++it;
+		if(it->state == ANTICIPATED)
+		{
+		    it->state = TERMINATED;
+		} 
+		else if(it->state == TRANSMITTED)
+		{
+		    it->state = ANTICIPATED;
+		}
+		
+		if(it->state == TERMINATED)
+		{
+		    it->off_propagation_length += propagation_speed * (1.0 / (float)ticks_per_second);
+		}
+		
+		it->on_propagation_length += propagation_speed * (1.0 / (float)ticks_per_second);
+		
+		++it;
 	}
 }
 
@@ -86,8 +86,8 @@ bool Network_medium::is_busy(Computer* sender)
 {
     // Search to find out if any current transmissions (or ended transmissions) can be detected at the target computer
     for( vector<Collision_event>::iterator it = collisions.begin();
-	     it != collisions.end(); 
-	     ++it )
+	 it != collisions.end(); 
+	 ++it )
 	{
         	// Get the distance between this "transmitting computer" and the computer that is checking the line for busy
         	float distance = abs(sender->get_id() - it->source->get_id()) * 10.0;

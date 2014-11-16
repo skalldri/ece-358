@@ -42,15 +42,16 @@ void Computer::run_tick(unsigned long long int tick)
 		{
 			case CSMA_PERSISTENT:
 			
-				medium_sense_time--;			
+				/*medium_sense_time--;			
 	
 				if(medium->is_busy(this))
 				{
 					medium_sense_time = (96.0/((float)bits_per_second)) * (float)ticks_per_second;
 					return;
-				}
+				}*/
 
-				if(medium_sense_time <= 0)
+				//if(medium_sense_time <= 0)
+				if(!medium->is_busy(this))
 				{
 					//cout << "Computer " << get_id() << " beginning transmit" << endl;
 					state = TRANSMIT;
