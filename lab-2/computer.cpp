@@ -31,7 +31,7 @@ void Computer::run_tick(unsigned long long int tick)
 	{
 		if(input.size() > 0) // There is a packet to transmit, and we are currently idle
 		{
-			cout << "Computer " << get_id() << " beginning medium sense" << endl;
+			//cout << "Computer " << get_id() << " beginning medium sense" << endl;
 			medium_sense_time = (96.0/((float)bits_per_second)) * (float)ticks_per_second; // Set the number of ticks we will observe the medium for
 			state = MEDIUM_SENSE;
 		}
@@ -52,7 +52,7 @@ void Computer::run_tick(unsigned long long int tick)
 
 				if(medium_sense_time <= 0)
 				{
-					cout << "Computer " << get_id() << " beginning transmit" << endl;
+					//cout << "Computer " << get_id() << " beginning transmit" << endl;
 					state = TRANSMIT;
 	        			to_transmit = (ticks_per_second / bits_per_second) * input.front().size; //to_transmit is the number of ticks we need to transmit for to send the packet
 					collision_count = 0;
@@ -73,7 +73,7 @@ void Computer::run_tick(unsigned long long int tick)
 
 		if(medium->is_busy(this)) // Collision occurred
 		{
-			cout << "Computer " << get_id() << " detected collision" << endl;
+			//cout << "Computer " << get_id() << " detected collision" << endl;
 			state = EXP_BACKOFF;
 			collision_count++;
 			backoff_count = (rand() % (2 << collision_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
@@ -83,7 +83,7 @@ void Computer::run_tick(unsigned long long int tick)
 
 		if(to_transmit <= 0)
 		{
-			cout << "Computer " << get_id() << " transmit complete, returning to IDLE" << endl;
+			//cout << "Computer " << get_id() << " transmit complete, returning to IDLE" << endl;
 			output.push(input.front());
 			input.pop();
 			state = IDLE;
@@ -95,7 +95,7 @@ void Computer::run_tick(unsigned long long int tick)
 
 		if(backoff_count <= 0)
 		{
-			cout << "Computer " << get_id() << " exp backoff complete, returning to IDLE" << endl;
+			//cout << "Computer " << get_id() << " exp backoff complete, returning to IDLE" << endl;
 			state = IDLE;
 		}
 	}
@@ -116,5 +116,5 @@ void Computer::generate_packet(unsigned long long int current_tick)
 	next_creation = random + current_tick;
 	Packet t = Packet(packet_size, current_tick);
 	input.push(t);
-	cout << "Computer " << get_id() << " generating packet in tick " << current_tick << endl;
+	//cout << "Computer " << get_id() << " generating packet in tick " << current_tick << endl;
 }

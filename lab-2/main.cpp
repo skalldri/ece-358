@@ -13,7 +13,7 @@ static const unsigned int packet_size                 = 1500 * 8;   // 1500 byte
              int          max_queue_size              = -1;         // Unlimited size
 	     int          num_computers               = 20;
 static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
-static const unsigned long long int simulation_time   = ticks_per_second * 10; // Simulate for 10 seconds
+static const unsigned long long int simulation_time   = ticks_per_second * 120; // Simulate for 10 seconds
 static const unsigned int propagation_speed           = 2 * 100000000; // meters per second (This is fast enough to ensure that collisions can always be heard)
 
 //Time required to process one packet
@@ -69,7 +69,34 @@ int main(int argc, char *argv[]) {
     network_simulator.run();
     
     cout << "-------------STATISTICS---------------" << endl << endl;
+
+    unsigned long long int sojourn_time_total = 0;
+    unsigned long long int num_bits = 0;
+   
+    for(vector<Computer*>::iterator it = computers.begin();
+        it != computers.end();
+        ++it)
+    {   
+        unsigned long long int sojourn_time_av_comp = 0;
+        unsigned long long int num_packets = (*it)->output.size();
+
+        while((*it)->output.size() > 0)
+        {
+            Packet finished = (*it)->output.front();
+            (*it)->output.pop();
+
+            num_bits += finished.size;
+            sojourn_time_av_comp += (finished.end_tick - finished.creation_tick);
+        }
+
+	sojourn_time_total += (float)sojourn_time_av_comp / (float)num_packets;
+    }
+
+    cout << "Average Delay: " <<  (float)sojourn_time_total / (float)computers.size() << endl;
+    cout << "Average Throughput: " << (float)num_bits / (float)(simulation_time / ticks_per_second);
     
+
+    return 0;
 }
 
 

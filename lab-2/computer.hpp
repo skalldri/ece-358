@@ -35,6 +35,8 @@ class Computer : public Simulatable {
     int collision_handler();
     int timeout_handler(int);
     
+    std::queue<Packet> output;
+
     private:
         Computer_state state;
         Csma_mode csma;
@@ -52,7 +54,7 @@ class Computer : public Simulatable {
 	Network_medium* medium;
 	Exponential_rand expRand;
 	std::queue<Packet> input;
-	std::queue<Packet> output;
+
 };
 
 #endif

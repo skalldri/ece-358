@@ -70,7 +70,7 @@ void Network_medium::transmit(Computer* sender)
     
     // If we got to here, either this computer hasn't transmitted before or it had, but the signal had gone stale for at least one tick.
     // We will create a new event to track this transmission
-    cout << "New transmission detected over network medium!" << endl;
+    //cout << "New transmission detected over network medium!" << endl;
     Collision_event newEvent;
     newEvent.state = TRANSMITTED;
     newEvent.source = sender;
