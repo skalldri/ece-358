@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include "simulatable.hpp"
+#include <unistd.h>
 
 class Simulator {
 
@@ -16,7 +17,7 @@ public:
 	
 private:
 	unsigned long long int current_tick;
-    unsigned long long int max_tick;
+        unsigned long long int max_tick;
 	std::vector<Simulatable*> simulatables;
 };
 

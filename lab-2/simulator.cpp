@@ -23,6 +23,8 @@ void Simulator::run()
             cout << "Percent complete: " <<  (((float)current_tick / (float)max_tick) * 100.0) << "%               " << "\r";
             cout.flush();
         }
+	
+	//usleep(10);
     }
 }
 

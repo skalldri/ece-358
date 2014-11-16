@@ -12,7 +12,7 @@ private:
     
     
 public:    
-    Exponential_rand(int pps, int tps) : distribution(0.0, 1.0), packets_per_second(pps), ticks_per_second(tps) { };
+    Exponential_rand(int pps, int tps, int seed) : generator(seed), distribution(0.0, 1.0), packets_per_second(pps), ticks_per_second(tps) { };
     
     int get_random_ticks()
     {

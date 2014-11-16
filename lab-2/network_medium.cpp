@@ -18,11 +18,13 @@ void Network_medium::run_tick(unsigned long long int tick)
     
     float cable_length = num_computers * 10.0;
     
+    //cout << "Beginning network_medium processing time" << endl;
+
     for( vector<Collision_event>::iterator it = collisions.begin();
 	     it != collisions.end(); )
 	{
         // If the "signal off" wave has propagated the entire length of the cable...
-		if(it->off_propagation_length > cable_length)
+	if(it->off_propagation_length > cable_length)
         {
             // Delete the collision event as we won't ever use this again
             it = collisions.erase(it);
@@ -57,17 +59,18 @@ void Network_medium::transmit(Computer* sender)
 	     it != collisions.end(); 
 	     ++it )
 	{
-        // If this computer is in the progress of transmitting a packet...
-		if(it->source == sender && !it->state == ANTICIPATED)
-        {
-            // Update the state to show we're still transmitting (this prevents the "signal off" wave from propagating)
-            it->state = TRANSMITTED;
-            return;
-        } 
+                // If this computer is in the progress of transmitting a packet...
+		if(it->source == sender && it->state == ANTICIPATED)
+        	{
+            		// Update the state to show we're still transmitting (this prevents the "signal off" wave from propagating)
+            		it->state = TRANSMITTED;
+            		return;
+        	} 
 	}
     
     // If we got to here, either this computer hasn't transmitted before or it had, but the signal had gone stale for at least one tick.
     // We will create a new event to track this transmission
+    cout << "New transmission detected over network medium!" << endl;
     Collision_event newEvent;
     newEvent.state = TRANSMITTED;
     newEvent.source = sender;
@@ -86,13 +89,13 @@ bool Network_medium::is_busy(Computer* sender)
 	     it != collisions.end(); 
 	     ++it )
 	{
-        // Get the distance between this "transmitting computer" and the computer that is checking the line for busy
-        float distance = abs(sender->getId() - it->source->getId()) * 10.0;
+        	// Get the distance between this "transmitting computer" and the computer that is checking the line for busy
+        	float distance = abs(sender->get_id() - it->source->get_id()) * 10.0;
         
 		if(it->on_propagation_length >= distance && it->off_propagation_length < distance)
-        {
-            return true;
-        } 
+        	{
+            		return true;
+        	} 
 	}
     
     return false;

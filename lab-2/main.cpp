@@ -3,16 +3,18 @@
 #include "computer.hpp"
 #include "network_medium.hpp"
 
-//#define PREAMBLE //Undefine this to remove a lot of the message dumping procedure. See also #define DEBUG
+#define PREAMBLE //Undefine this to remove a lot of the message dumping procedure. See also #define DEBUG
 
 using namespace std;
 
 static const unsigned long long int ticks_per_second  = 1000000000; // 1 tick = 1 ns
              unsigned int packets_per_second          = 100;        //
-static const unsigned int packet_size                 = 2000;       // 2000 bits
+static const unsigned int packet_size                 = 1500 * 8;   // 1500 bytes (It takes 0.012 seconds to transmit this at 1 Mbps)
              int          max_queue_size              = -1;         // Unlimited size
+	     int          num_computers               = 20;
 static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
-static const unsigned long long int simulation_time   = ticks_per_second * 5; // Simulate for 10 seconds
+static const unsigned long long int simulation_time   = ticks_per_second * 10; // Simulate for 10 seconds
+static const unsigned int propagation_speed           = 2 * 100000000; // meters per second (This is fast enough to ensure that collisions can always be heard)
 
 //Time required to process one packet
 static unsigned int processing_time(unsigned int ticks_per_second, unsigned int bits_per_second, unsigned int packet_size)
@@ -22,9 +24,11 @@ static unsigned int processing_time(unsigned int ticks_per_second, unsigned int 
 
 int main(int argc, char *argv[]) {
 
-    cout << "Please enter max queue size: ";
-    cin >> max_queue_size;
-    cout << "Max Queue Size is " << max_queue_size << endl;
+    srand(time(NULL));
+
+    cout << "Please enter number of computers: ";
+    cin >> num_computers;
+    cout << "Number of computers on lan is " << num_computers << endl;
 
     cout << "Please enter packets per second: ";
     cin >> packets_per_second;
@@ -46,6 +50,22 @@ int main(int argc, char *argv[]) {
     cout << "-------------MESSAGES---------------" << endl << endl;
     #endif
     
+    vector<Computer*> computers;
+    Network_medium medium(ticks_per_second, num_computers, propagation_speed);
+
+    Csma_mode csma        = CSMA_PERSISTENT;
+    float     csma_p      = 1.0;
+
+    for(int i = 0; i < num_computers; i++)
+    {
+	Computer* comp = new Computer(&medium, CSMA_PERSISTENT, csma_p, i, packet_size, packets_per_second, ticks_per_second, bits_per_second);
+
+	computers.push_back(comp);
+	network_simulator.add_simulatable(comp);
+    }
+
+    network_simulator.add_simulatable(&medium);
+
     network_simulator.run();
     
     cout << "-------------STATISTICS---------------" << endl << endl;

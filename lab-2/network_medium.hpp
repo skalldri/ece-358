@@ -6,6 +6,7 @@
 #include <math.h>
 #include "packet.hpp"
 #include "debug_log.hpp"
+#include "simulatable.hpp"
 
 class Computer;
 

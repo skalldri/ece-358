@@ -1,20 +1,23 @@
 #include "computer.hpp"
 
-Computer::Computer(Network_medium* medium, unsigned int csma, float csma_p, int id, unsigned int packet_size, unsigned int packets_per_second, unsigned int ticks_per_sec) :
-    Simulatable(ticks_per_sec)
+using namespace std;
+
+Computer::Computer(Network_medium* med, Csma_mode c, float p, int i, unsigned int pack_size, unsigned int pps, unsigned int ticks_per_sec, unsigned int bps) :
+    Simulatable(ticks_per_sec),
+    expRand(pps, ticks_per_sec, rand())
 {
-	this.csma = csma;
-	this.csma_p = csma_p;
-    this.id = id;
-	this->medium = medium;
-	this.packet_size = packet_size;
+	bits_per_second = bps;
+	csma = c;
+	state = IDLE;
+	csma_p = p;
+        id = i;
+	medium = med;
+	packet_size = pack_size;
 	to_transmit = 0;
 	collision_count = 0;
 	timeout = 0;
-	expRand = Exponential_rand(packets_per_second, ticks_per_second);
-	input = queue<Packet>();
-	output = queue<Packet>();
-	generatePacket(tick);
+	packets_per_second = pps;
+	next_creation = expRand.get_random_ticks();
 }
 
 Computer::~Computer()
@@ -24,62 +27,82 @@ Computer::~Computer()
     
 void Computer::run_tick(unsigned long long int tick)
 {	
-	Packet tmp = input.front();
-	if(to_transmit == 0 && tmp.creation_tick <= tick){
-		to_transmit += tmp.size;
-		current_packet = tmp;
-		input.pop_front();
+	if(state == IDLE)
+	{
+		if(input.size() > 0) // There is a packet to transmit, and we are currently idle
+		{
+			cout << "Computer " << get_id() << " beginning medium sense" << endl;
+			medium_sense_time = (96.0/((float)bits_per_second)) * (float)ticks_per_second; // Set the number of ticks we will observe the medium for
+			state = MEDIUM_SENSE;
+		}
+	}
+	else if(state == MEDIUM_SENSE)
+	{
+		switch(csma)
+		{
+			case CSMA_PERSISTENT:
+			
+				medium_sense_time--;			
+	
+				if(medium->is_busy(this))
+				{
+					medium_sense_time = (96.0/((float)bits_per_second)) * (float)ticks_per_second;
+					return;
+				}
+
+				if(medium_sense_time <= 0)
+				{
+					cout << "Computer " << get_id() << " beginning transmit" << endl;
+					state = TRANSMIT;
+	        			to_transmit = (ticks_per_second / bits_per_second) * input.front().size; //to_transmit is the number of ticks we need to transmit for to send the packet
+					collision_count = 0;
+				}
+			
+				break;
+			
+			case CSMA_NON_PERSISTENT:
+			break;
+
+			case CSMA_P_PERSISTENT:
+			break;
+		}
+	}
+	else if(state == TRANSMIT)
+	{
+		medium->transmit(this);
+
+		if(medium->is_busy(this)) // Collision occurred
+		{
+			cout << "Computer " << get_id() << " detected collision" << endl;
+			state = EXP_BACKOFF;
+			collision_count++;
+			backoff_count = (rand() % (2 << collision_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
+		}
+
+		to_transmit--;
+
+		if(to_transmit <= 0)
+		{
+			cout << "Computer " << get_id() << " transmit complete, returning to IDLE" << endl;
+			output.push(input.front());
+			input.pop();
+			state = IDLE;
+		}
+	}
+	else if(state == EXP_BACKOFF)
+	{
+		backoff_count--;
+
+		if(backoff_count <= 0)
+		{
+			cout << "Computer " << get_id() << " exp backoff complete, returning to IDLE" << endl;
+			state = IDLE;
+		}
 	}
 			
-	if(tick == next_creation){
-		generatePacket(tick);
-	}
-	
-	if(timeout > 0){
-		timeout--;
-		return
-	}
-	
-	if(is_busy){
-		if(to_transmit < packet_size)
-			timeout = collision_handler();
-
-		if(csma == CSMA_NON_PERSISTENT)
-			timeout = timeout_handler(96 / medium->get_speed() * ticks_per_second);
-		
-		return;
-	}
-	
-	if(to_transmit > 0){
-		to_transmit--;
-		if(to_transmit == 0)
-			current_packet.processing_complete(tick);
-			output.push_back(current_packet);
-			collision_count = 0;
-	}
-		
-    // Check and see if we want to transmit during this tick (do we have a new packet to transmit OR are we currently transmitting a packet?)
-    // Also, if we need to transmit a new packet and we're currently transmitting, queue the packet
-    
-    // If no, return
-    
-    // If yes, try and transmit a packet over the medium
-    
-    // Cannot immediately know if a collision occurred: what if this is the first transmission during this tick, but there are others?
-    // Solution: the Network_medium will callback anyone who needs to know about collisions
-    
-}
-
-// Called by the network medium whenever a collision occurs
-int Computer::collision_handler()
-{
-	return timeout_handler(pow(2, ++collision_count));
-    // Abort transmitting current packet and requeue according to CSMA/CD
-}
-
-int Computer::timeout_handler(int n)
-{
-	rand() % n + 1;
+	if(tick >= next_creation) {
+		generate_packet(tick);
+	}    
 }
 
 int Computer::get_id()
@@ -89,7 +112,9 @@ int Computer::get_id()
 
 void Computer::generate_packet(unsigned long long int current_tick)
 {
-	int random = expRand.get_random_ticks();
+	unsigned int random = expRand.get_random_ticks();
 	next_creation = random + current_tick;
-	input.push_back(new Packet(packet_size, next_creation));
+	Packet t = Packet(packet_size, current_tick);
+	input.push(t);
+	cout << "Computer " << get_id() << " generating packet in tick " << current_tick << endl;
 }
