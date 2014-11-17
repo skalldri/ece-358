@@ -15,7 +15,8 @@ static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
 static const unsigned int seconds                     = 60;
 static const unsigned long long int simulation_time   = ticks_per_second * seconds; // Simulate for 10 seconds
 static const unsigned int propagation_speed           = 2 * 100000000; // meters per second (This is fast enough to ensure that collisions can always be heard)
-
+		      float p                         = 0.01;
+		      Csma_mode mode                  = CSMA_NON_PERSISTENT;
 //Time required to process one packet
 static unsigned int processing_time(unsigned int ticks_per_second, unsigned int bits_per_second, unsigned int packet_size)
 {
@@ -30,8 +31,21 @@ int main(int argc, char *argv[]) {
 	{
 		num_computers = atoi(argv[1]);
 		packets_per_second = atoi(argv[2]);
+		mode = CSMA_NON_PERSISTENT;
 	        cout << "Number of computers on lan is " << num_computers << endl;
 	        cout << "Packets per second is " << packets_per_second << endl;
+		cout << "Using mode " << mode << endl;
+	}
+	else if (argc == 4)
+	{
+		num_computers = atoi(argv[1]);
+		packets_per_second = atoi(argv[2]);
+		p = atof(argv[3]);
+		mode = (p >= 1.0 ? CSMA_PERSISTENT : CSMA_P_PERSISTENT); 
+	        cout << "Number of computers on lan is " << num_computers << endl;
+	        cout << "Packets per second is " << packets_per_second << endl;
+		cout << "CSMA/CD P value is " << p << endl;
+		cout << "Using mode " << mode << endl;
 	}
 	else
 	{
@@ -42,6 +56,9 @@ int main(int argc, char *argv[]) {
 	    cout << "Please enter packets per second: ";
 	    cin >> packets_per_second;
 	    cout << "Packets per second is " << packets_per_second << endl;
+            
+	    mode = CSMA_NON_PERSISTENT;
+	    cout << "Using mode " << mode << endl;
 	}
 
     Simulator network_simulator(simulation_time);
@@ -69,7 +86,7 @@ int main(int argc, char *argv[]) {
 
     for(int i = 0; i < num_computers; i++)
     {
-	Computer* comp = new Computer(&medium, CSMA_NON_PERSISTENT, csma_p, i, packet_size, packets_per_second, ticks_per_second, bits_per_second);
+	Computer* comp = new Computer(&medium, mode, csma_p, i, packet_size, packets_per_second, ticks_per_second, bits_per_second);
 
 	computers.push_back(comp);
 	network_simulator.add_simulatable(comp);

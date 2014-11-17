@@ -51,7 +51,7 @@ class Computer : public Simulatable {
 	unsigned long long int to_transmit;
 	unsigned long long int medium_sense_time;
 	unsigned long long int backoff_count;
-	unsigned long long int random_wait_count;
+	unsigned long long int random_wait_time;
 	unsigned long long int jamming_time;
 	unsigned long long int next_creation;
 	unsigned long long int packets_per_second;

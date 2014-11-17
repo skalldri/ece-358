@@ -15,16 +15,16 @@ void Simulator::run()
     while(current_tick < max_tick)
     {
         tick();
-	/*
+	
         print_delay++;
         
-        if(print_delay > 1000000)
+        if(print_delay > 10000000)
         {
             print_delay = 0;
             cout << "Percent complete: " <<  (((float)current_tick / (float)max_tick) * 100.0) << "%               " << "\r";
             cout.flush();
         }
-	*/
+	
 	//usleep(10);
     }
 }

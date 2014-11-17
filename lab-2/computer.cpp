@@ -34,6 +34,7 @@ void Computer::run_tick(unsigned long long int tick)
 			//cout << "Computer " << get_id() << " beginning medium sense" << endl;
 			medium_sense_time = (96.0/((float)bits_per_second)) * (float)ticks_per_second; // Set the number of ticks we will observe the medium for
 			state = MEDIUM_SENSE;
+			random_wait_time = 0;
 		}
 	}
 	else if(state == MEDIUM_SENSE)
@@ -77,27 +78,43 @@ void Computer::run_tick(unsigned long long int tick)
 			break;
 
 			case CSMA_P_PERSISTENT:
+				bool medium_state = medium->is_busy(this);
+					
 				if(medium_sense_time > 0)	
-					medium_sense_time--;			
+					medium_sense_time--;
+				
+				if(random_wait_time > 1)
+					random_wait_time--;			
 
-				if(medium->is_busy(this)) // Medium is busy, skip the sense waiting period
+				if(medium_sense_time > 0 && medium_state) // Medium is busy, skip sense period
 				{
 					medium_sense_time = 0;
 				}
+				else if(random_wait_time == 1 && medium_state && medium_sense_time <= 0)
+				{
+					state = EXP_BACKOFF;
+
+					if(collision_count < 10)
+						collision_count++;
+
+					backoff_count = (rand() % (1 << collision_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
+				}
 				else if(medium_sense_time <= 0) // Medium was not busy, POSSIBLY TRANSMIT!
 				{
-					//cout << "Computer " << get_id() << " beginning transmit" << endl;
 					int probability = rand() % 101;
 					float comparator = csma_p * 100.0;
-					
-					if(comparator > probability) // Do the thing
+
+					//cout << "Random number " << probability << " with check " << comparator << endl;
+
+					if(random_wait_time <= 1 && comparator > probability) // Do the thing
 					{
-					state = TRANSMIT;
-	        			to_transmit = (ticks_per_second / bits_per_second) * input.front().size; //to_transmit is the number of ticks we need to transmit for to send the packet
+						state = TRANSMIT;
+	        				to_transmit = (ticks_per_second / bits_per_second) * input.front().size;
 					}
-					else  // Wait for "one slot" then try again
-					
-					
+					else if(random_wait_time <= 1)  // Wait for "one slot" then try again
+					{
+						random_wait_time = ((ticks_per_second / bits_per_second) * packet_size) + 1;
+					}					
 				}
 			break;
 		}
