@@ -3,16 +3,16 @@
 #include "computer.hpp"
 #include "network_medium.hpp"
 
-#define PREAMBLE //Undefine this to remove a lot of the message dumping procedure. See also #define DEBUG
+//#define PREAMBLE //Undefine this to remove a lot of the message dumping procedure. See also #define DEBUG
 
 using namespace std;
 
 static const unsigned long long int ticks_per_second  = 100000000; // 1 tick = 1 us
-             unsigned int packets_per_second          = 100;        //
+             unsigned int packets_per_second          = 4;        //
 static const unsigned int packet_size                 = 1500 * 8;   // 1500 bytes (It takes 0.012 seconds to transmit this at 1 Mbps)
 	     int          num_computers               = 20;
 static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
-static const unsigned int seconds                     = 120;
+static const unsigned int seconds                     = 20;
 static const unsigned long long int simulation_time   = ticks_per_second * seconds; // Simulate for 10 seconds
 static const unsigned int propagation_speed           = 2 * 100000000; // meters per second (This is fast enough to ensure that collisions can always be heard)
 
@@ -100,6 +100,8 @@ int main(int argc, char *argv[]) {
     }
 
     cout << "Average packets / sec: " << (float)total_packets / (float)(num_computers * seconds) << endl;
+    cout << "Successfully transmitted packets: "  << total_sent_packets << endl;
+    cout << "Total attempted to transmit packets: " << total_packets << endl;
     cout << "Average Delay: " <<  sojourn_time_total / (float)(total_sent_packets * ticks_per_second) << endl;
     cout << "Average Throughput: " << (float)num_bits / (float)(seconds) << " bits/sec" << endl;
     

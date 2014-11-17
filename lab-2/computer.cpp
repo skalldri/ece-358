@@ -41,17 +41,14 @@ void Computer::run_tick(unsigned long long int tick)
 		switch(csma)
 		{
 			case CSMA_PERSISTENT:
-			
-				/*medium_sense_time--;			
-	
-				if(medium->is_busy(this))
+				if(medium_sense_time > 0)	
+					medium_sense_time--;			
+				
+				if(medium->is_busy(this)) // Medium is busy, skip the sense waiting period
 				{
-					medium_sense_time = (96.0/((float)bits_per_second)) * (float)ticks_per_second;
-					return;
-				}*/
-
-				//if(medium_sense_time <= 0)
-				if(!medium->is_busy(this))
+					medium_sense_time = 0;
+				}
+				else if(medium_sense_time <= 0) // Medium was not busy, TRANSMIT!
 				{
 					//cout << "Computer " << get_id() << " beginning transmit" << endl;
 					state = TRANSMIT;
@@ -72,17 +69,16 @@ void Computer::run_tick(unsigned long long int tick)
 	{
 		medium->transmit(this);
 
+		if(to_transmit > 0)
+			to_transmit--;
+
 		if(medium->is_busy(this)) // Collision occurred
 		{
-			//cout << "Computer " << get_id() << " detected collision" << endl;
-			state = EXP_BACKOFF;
-			collision_count++;
-			backoff_count = (rand() % (2 << collision_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
+			//cout << "Computer " << get_id() << " detected collision, beginning Jamming" << endl;
+			state = JAMMING;
+			jamming_time = (48.0/((float)bits_per_second)) * (float)ticks_per_second;
 		}
-
-		to_transmit--;
-
-		if(to_transmit <= 0)
+		else if(to_transmit <= 0)
 		{
 			//cout << "Computer " << get_id() << " transmit complete, returning to IDLE" << endl;
 			Packet done = input.front();
@@ -92,9 +88,28 @@ void Computer::run_tick(unsigned long long int tick)
 			state = IDLE;
 		}
 	}
+        else if(state == JAMMING)
+	{
+		medium->transmit(this);
+	
+		if(jamming_time > 0)
+			jamming_time--;
+
+		if(jamming_time <= 0)
+		{
+			//cout << "Computer " << get_id() << " beginning exponential backoff" << endl;
+			state = EXP_BACKOFF;
+
+			if(collision_count < 10)
+				collision_count++;
+
+			backoff_count = (rand() % (2 << collision_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
+		}
+	}
 	else if(state == EXP_BACKOFF)
 	{
-		backoff_count--;
+		if(backoff_count > 0)
+			backoff_count--;
 
 		if(backoff_count <= 0)
 		{
@@ -120,4 +135,6 @@ void Computer::generate_packet(unsigned long long int current_tick)
 	Packet t = Packet(packet_size, current_tick);
 	input.push(t);
 	//cout << "Computer " << get_id() << " generating packet in tick " << current_tick << endl;
+	//cout << "Computer " << get_id() << " queue length " << input.size() << endl;
+	//cout << "Computer " << get_id() << " current state is " << state << endl;
 }

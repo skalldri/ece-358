@@ -21,7 +21,8 @@ enum Computer_state
     IDLE,
     MEDIUM_SENSE,
     TRANSMIT,
-    EXP_BACKOFF
+    EXP_BACKOFF,
+    JAMMING
 };
 
 class Computer : public Simulatable {
@@ -42,16 +43,17 @@ class Computer : public Simulatable {
         Computer_state state;
         Csma_mode csma;
         float csma_p;
-	unsigned int bits_per_second;
+	unsigned long long int bits_per_second;
         unsigned int collision_count;
-        unsigned int timeout;
+        unsigned long long int timeout;
 	unsigned int id;
 	unsigned int packet_size;
-	unsigned int to_transmit;
-	unsigned int medium_sense_time;
-	unsigned int backoff_count;
+	unsigned long long int to_transmit;
+	unsigned long long int medium_sense_time;
+	unsigned long long int backoff_count;
+	unsigned long long int jamming_time;
 	unsigned long long int next_creation;
-	unsigned int packets_per_second;
+	unsigned long long int packets_per_second;
 	Network_medium* medium;
 	Exponential_rand expRand;
 

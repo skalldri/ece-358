@@ -20,6 +20,11 @@ void Network_medium::run_tick(unsigned long long int tick)
     
     //cout << "Beginning network_medium processing time" << endl;
 
+	/*if(collisions.size() > 2)
+	{
+		cout << "Warning: more than two signals on the wire" << endl;
+	}*/
+
     	for( vector<Collision_event>::iterator it = collisions.begin();
 	     it != collisions.end(); )
 	{
