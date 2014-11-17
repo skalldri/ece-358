@@ -90,9 +90,14 @@ void Computer::run_tick(unsigned long long int tick)
 					int probability = rand() % 101;
 					float comparator = csma_p * 100.0;
 					
+					if(comparator > probability) // Do the thing
+					{
 					state = TRANSMIT;
 	        			to_transmit = (ticks_per_second / bits_per_second) * input.front().size; //to_transmit is the number of ticks we need to transmit for to send the packet
-					collision_count = 0;
+					}
+					else  // Wait for "one slot" then try again
+					
+					
 				}
 			break;
 		}
@@ -118,6 +123,7 @@ void Computer::run_tick(unsigned long long int tick)
 			output.push(done);
 			input.pop();
 			state = IDLE;
+			collision_count = 0;
 		}
 	}
         else if(state == JAMMING)
