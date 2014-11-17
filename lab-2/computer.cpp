@@ -34,7 +34,6 @@ void Computer::run_tick(unsigned long long int tick)
 			//cout << "Computer " << get_id() << " beginning medium sense" << endl;
 			medium_sense_time = (96.0/((float)bits_per_second)) * (float)ticks_per_second; // Set the number of ticks we will observe the medium for
 			state = MEDIUM_SENSE;
-			random_wait_count = 0;
 		}
 	}
 	else if(state == MEDIUM_SENSE)
@@ -54,7 +53,6 @@ void Computer::run_tick(unsigned long long int tick)
 					//cout << "Computer " << get_id() << " beginning transmit" << endl;
 					state = TRANSMIT;
 	        			to_transmit = (ticks_per_second / bits_per_second) * input.front().size; //to_transmit is the number of ticks we need to transmit for to send the packet
-					collision_count = 0;
 				}
 			
 				break;
@@ -67,10 +65,7 @@ void Computer::run_tick(unsigned long long int tick)
 				{
 					if(medium_sense_time <= 0) //We have finished a waiting period, but the medium is still busy
 					{
-						if(random_wait_count < 10)
-							random_wait_count++;
-
-						medium_sense_time = (rand() % (2 << random_wait_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
+						medium_sense_time = (rand() % (1 << collision_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
 					}
 				}
 				else if(medium_sense_time <= 0) //Medium wasn't busy and we're at the end of a waiting period, GO!
@@ -78,7 +73,6 @@ void Computer::run_tick(unsigned long long int tick)
 					//cout << "Computer " << get_id() << " beginning transmit" << endl;
 					state = TRANSMIT;
 	        			to_transmit = (ticks_per_second / bits_per_second) * input.front().size; //to_transmit is the number of ticks we need to transmit for to send the packet
-					collision_count = 0;
 				}
 			break;
 
@@ -125,7 +119,7 @@ void Computer::run_tick(unsigned long long int tick)
 			if(collision_count < 10)
 				collision_count++;
 
-			backoff_count = (rand() % (2 << collision_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
+			backoff_count = (rand() % (1 << collision_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
 		}
 	}
 	else if(state == EXP_BACKOFF)

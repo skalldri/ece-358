@@ -1,8 +1,8 @@
 CC=gcc
 CXX=g++
 RM=rm -f
-CPPFLAGS=-g -std=c++11 -O3
-LDFLAGS=-g
+CPPFLAGS=-s -std=c++11 -O3
+LDFLAGS=-s
 LDLIBS=
 
 SRCS=main.cpp simulator.cpp computer.cpp network_medium.cpp packet.cpp debug_log.cpp
