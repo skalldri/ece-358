@@ -24,30 +24,41 @@ static unsigned int processing_time(unsigned int ticks_per_second, unsigned int 
 
 int main(int argc, char *argv[]) {
 
-    srand(time(NULL));
+	srand(time(NULL));
 
-    cout << "Please enter number of computers: ";
-    cin >> num_computers;
-    cout << "Number of computers on lan is " << num_computers << endl;
+	if(argc == 3)
+	{
+		num_computers = atoi(argv[1]);
+		packets_per_second = atoi(argv[2]);
+	        cout << "Number of computers on lan is " << num_computers << endl;
+	        cout << "Packets per second is " << packets_per_second << endl;
+	}
+	else
+	{
+	    cout << "Please enter number of computers: ";
+	    cin >> num_computers;
+	    cout << "Number of computers on lan is " << num_computers << endl;
 
-    cout << "Please enter packets per second: ";
-    cin >> packets_per_second;
-    cout << "Packets per second is " << packets_per_second << endl;
+	    cout << "Please enter packets per second: ";
+	    cin >> packets_per_second;
+	    cout << "Packets per second is " << packets_per_second << endl;
+	}
 
     Simulator network_simulator(simulation_time);
         
     
     #ifdef PREAMBLE
     cout << "-------------ECE 358 NETWORK SIMULATOR---------------" << endl << endl;
-    cout << "             ONE TICK IS ONE NANOSECOND" << endl << endl;
+    cout << "            ONE TICK IS TEN NANOSECONDS" << endl << endl;
     cout << "Ticks per sim-second: " << ticks_per_second << endl;
     cout << "Packets per sim-second: " << packets_per_second << endl;
     cout << "Packet size: " << packet_size << " bytes" << endl;
     cout << "Bits per sim-second: " << bits_per_second << " bits" << endl;
     cout << "Packet processing time: " << processing_time(ticks_per_second, bits_per_second, packet_size) << " ticks" << endl;
     cout << "Average time between packets: " << (ticks_per_second / packets_per_second) << " ticks" << endl;
-    cout << "Total ticks: " << simulation_time << " ticks" << endl << endl;
-    cout << "-------------MESSAGES---------------" << endl << endl;
+    cout << "Total ticks: " << simulation_time << " ticks" << endl;
+    cout << "Computers: " << num_computers << endl;
+    cout << "Packets per second: " << packets_per_second << endl;
     #endif
     
     vector<Computer*> computers;
@@ -58,7 +69,7 @@ int main(int argc, char *argv[]) {
 
     for(int i = 0; i < num_computers; i++)
     {
-	Computer* comp = new Computer(&medium, CSMA_PERSISTENT, csma_p, i, packet_size, packets_per_second, ticks_per_second, bits_per_second);
+	Computer* comp = new Computer(&medium, CSMA_NON_PERSISTENT, csma_p, i, packet_size, packets_per_second, ticks_per_second, bits_per_second);
 
 	computers.push_back(comp);
 	network_simulator.add_simulatable(comp);

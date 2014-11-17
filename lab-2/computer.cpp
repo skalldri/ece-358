@@ -34,6 +34,7 @@ void Computer::run_tick(unsigned long long int tick)
 			//cout << "Computer " << get_id() << " beginning medium sense" << endl;
 			medium_sense_time = (96.0/((float)bits_per_second)) * (float)ticks_per_second; // Set the number of ticks we will observe the medium for
 			state = MEDIUM_SENSE;
+			random_wait_count = 0;
 		}
 	}
 	else if(state == MEDIUM_SENSE)
@@ -43,7 +44,7 @@ void Computer::run_tick(unsigned long long int tick)
 			case CSMA_PERSISTENT:
 				if(medium_sense_time > 0)	
 					medium_sense_time--;			
-				
+
 				if(medium->is_busy(this)) // Medium is busy, skip the sense waiting period
 				{
 					medium_sense_time = 0;
@@ -59,9 +60,30 @@ void Computer::run_tick(unsigned long long int tick)
 				break;
 			
 			case CSMA_NON_PERSISTENT:
+				if(medium_sense_time > 0)
+					medium_sense_time--;
+				
+				if(medium->is_busy(this))
+				{
+					if(medium_sense_time <= 0) //We have finished a waiting period, but the medium is still busy
+					{
+						if(random_wait_count < 10)
+							random_wait_count++;
+
+						medium_sense_time = (rand() % (2 << random_wait_count)) * ((512.0/((float)bits_per_second)) * (float)ticks_per_second);
+					}
+				}
+				else if(medium_sense_time <= 0) //Medium wasn't busy and we're at the end of a waiting period, GO!
+				{
+					//cout << "Computer " << get_id() << " beginning transmit" << endl;
+					state = TRANSMIT;
+	        			to_transmit = (ticks_per_second / bits_per_second) * input.front().size; //to_transmit is the number of ticks we need to transmit for to send the packet
+					collision_count = 0;
+				}
 			break;
 
 			case CSMA_P_PERSISTENT:
+				
 			break;
 		}
 	}

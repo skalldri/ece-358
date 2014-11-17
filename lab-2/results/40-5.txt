@@ -1,0 +1,2 @@
+Number of computers on lan is 40
+Packets per second is 6
