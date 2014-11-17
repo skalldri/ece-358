@@ -12,7 +12,7 @@ static const unsigned long long int ticks_per_second  = 100000000; // 1 tick = 1
 static const unsigned int packet_size                 = 1500 * 8;   // 1500 bytes (It takes 0.012 seconds to transmit this at 1 Mbps)
 	     int          num_computers               = 20;
 static const unsigned int bits_per_second             = 1000000;    // 1 Mbps
-static const unsigned int seconds                     = 20;
+static const unsigned int seconds                     = 60;
 static const unsigned long long int simulation_time   = ticks_per_second * seconds; // Simulate for 10 seconds
 static const unsigned int propagation_speed           = 2 * 100000000; // meters per second (This is fast enough to ensure that collisions can always be heard)
 
